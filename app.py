@@ -6,7 +6,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 data_recom = pd.read_csv('dataset/data_recom.csv')
-
 corpus = data_recom['prompt'].tolist()
 
 tfidf_vectorizer = TfidfVectorizer()
