@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/sonic-anagram-397306/prompt_recommendation', '-f', 'deployment/Dockerfile.prod', '.']
+    args: ['build', '-t', 'gcr.io/sonic-anagram-397306/prompt_recommendation', '-f', 'Dockerfile.prod', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/sonic-anagram-397306/prompt_recommendation']
