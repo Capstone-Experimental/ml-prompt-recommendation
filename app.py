@@ -1,28 +1,16 @@
 from flask import Flask, request, jsonify
 import pandas as pd
-from transformers import AutoTokenizer, AutoModel
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import torch
-import numpy as np
 
 app = Flask(__name__)
 
-# Load the dataset
-data_recom = pd.read_csv('data_recom.csv')
+data_recom = pd.read_csv('dataset/data_recom.csv')
 
-# Load TinyBERT model and tokenizer only once
-model_name = 'huawei-noah/TinyBERT_General_4L_312D'
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModel.from_pretrained(model_name)
+corpus = data_recom['prompt'].tolist()
 
-# Encode all prompts in the dataset during initialization
-all_prompt_embeddings = np.vstack([model(torch.tensor([tokenizer.encode(prompt, max_length=128, truncation=True, padding='max_length')]))[0].squeeze().detach().numpy().reshape(1, -1) for prompt in data_recom['prompt']])
-
-def encode_text(text):
-    """Encode text using TinyBERT tokenizer and model."""
-    encoding = tokenizer.encode(text, max_length=128, truncation=True, padding='max_length')
-    # Use squeeze to remove the singleton dimension and reshape to (1, -1)
-    return model(torch.tensor([encoding]))[0].squeeze().detach().numpy().reshape(1, -1)
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)
 
 @app.route('/recommend', methods=['POST'])
 def recommendation_route():
@@ -31,16 +19,12 @@ def recommendation_route():
             data = request.json
             input_prompt = data.get('prompt', '')  # Use get to handle missing key
 
-            # Encode the input prompt
-            prompt_embedding = encode_text(input_prompt)
+            input_tfidf = tfidf_vectorizer.transform([input_prompt])
 
-            # Calculate cosine similarity in parallel
-            similarities = cosine_similarity(prompt_embedding, all_prompt_embeddings)
+            similarities = cosine_similarity(input_tfidf, tfidf_matrix)
 
-            # Get the indices of the top 5 most similar prompts
-            top_indices = np.argsort(similarities[0])[::-1][:5]  # Descending order, limit to 5 prompts
+            top_indices = similarities.argsort(axis=1)[:, -5:][0][::-1]
 
-            # Get the top 5 most similar prompts and their corresponding similarities
             top_prompts = list(data_recom.loc[top_indices, 'prompt'])
             top_similarities = list(similarities[0, top_indices].astype(float))
 
@@ -65,4 +49,4 @@ def recommendation_route():
             }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

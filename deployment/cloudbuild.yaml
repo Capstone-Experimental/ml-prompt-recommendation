@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/sonic-anagram-397306/prompt_recommendation', '-f', 'deployment/Dockerfile.prod', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/sonic-anagram-397306/prompt_recommendation']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'ml-prompt-recommendation', '--image', 'gcr.io/sonic-anagram-397306/prompt_recommendation', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
+
+images:
+  - 'gcr.io/sonic-anagram-397306/prompt_recommendation'

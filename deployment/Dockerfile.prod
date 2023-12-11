@@ -1,0 +1,16 @@
+FROM python:3.11.4-bullseye
+
+LABEL key="ml-team"
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+COPY . /app
+
+WORKDIR /app
+
+RUN python3 -m pip install --upgrade pip
+
+RUN pip install -r requirements.txt
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--config", "deployment/gunicorn_config.py", "app:app"]

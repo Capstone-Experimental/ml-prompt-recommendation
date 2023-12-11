@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.prod
+    ports:
+      - "8080:8080"
+    image: ml-recommendaion-system:v1
