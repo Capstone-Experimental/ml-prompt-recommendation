@@ -10,10 +10,13 @@ app = Flask(__name__)
 # Load the dataset
 data_recom = pd.read_csv('data_recom.csv')
 
-# Load TinyBERT model and tokenizer
+# Load TinyBERT model and tokenizer only once
 model_name = 'huawei-noah/TinyBERT_General_4L_312D'
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModel.from_pretrained(model_name)
+
+# Encode all prompts in the dataset during initialization
+all_prompt_embeddings = np.vstack([model(torch.tensor([tokenizer.encode(prompt, max_length=128, truncation=True, padding='max_length')]))[0].squeeze().detach().numpy().reshape(1, -1) for prompt in data_recom['prompt']])
 
 def encode_text(text):
     """Encode text using TinyBERT tokenizer and model."""
@@ -30,11 +33,8 @@ def recommendation_route():
 
             # Encode the input prompt
             prompt_embedding = encode_text(input_prompt)
-            
-            # Encode all prompts in the dataset
-            all_prompt_embeddings = np.vstack([encode_text(prompt) for prompt in data_recom['prompt']])
 
-            # Calculate cosine similarity
+            # Calculate cosine similarity in parallel
             similarities = cosine_similarity(prompt_embedding, all_prompt_embeddings)
 
             # Get the indices of the top 5 most similar prompts
