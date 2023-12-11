@@ -11,7 +11,7 @@ corpus = data_recom['prompt'].tolist()
 tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)
 
-@app.route('api/recommendation', methods=['POST'])
+@app.route('/api/recommendation', methods=['POST'])
 def recommendation_route():
     if request.method == 'POST':
         try:

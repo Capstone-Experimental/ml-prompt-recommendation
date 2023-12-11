@@ -11,6 +11,6 @@ COPY . /app
 
 RUN python3 -m pip install --upgrade pip
 
-RUN pip install -r requirements.txt
+RUN pip install -r req.txt
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--config", "deployment/gunicorn_config.py", "app:app"]
