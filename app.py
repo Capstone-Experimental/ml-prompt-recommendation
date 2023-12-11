@@ -25,17 +25,10 @@ def recommendation_route():
             top_indices = similarities.argsort(axis=1)[:, -5:][0][::-1]
 
             top_prompts = list(data_recom.loc[top_indices, 'prompt'])
-            top_similarities = list(similarities[0, top_indices].astype(float))
+            # top_similarities = list(similarities[0, top_indices].astype(float))
 
             return jsonify({
-                "status": {
-                    "code": 200,
-                    "message": "Success",
-                },
-                "data": {
-                    "recommended_prompts": top_prompts,
-                    "similarities": top_similarities,
-                }
+                "recommendations": top_prompts,
             })
 
         except Exception as e:
