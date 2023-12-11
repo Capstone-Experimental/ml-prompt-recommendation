@@ -1,5 +1,6 @@
 1. Clone the repo into local machine
-git clone https://github.com/Capstone-Experimental/ml-prompt-recommendation.git
+
+```git clone https://github.com/Capstone-Experimental/ml-prompt-recommendation.git```
 
 2. Move to the folder that you cloned
 cd ml-prompt-recommendation
