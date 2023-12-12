@@ -13,4 +13,5 @@ RUN python3 -m pip install --upgrade pip
 
 RUN pip install -r req.txt
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--config", "deployment/gunicorn_config.py", "app:app"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--config", "deployment/gunicorn_config.py", "app:app"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]
