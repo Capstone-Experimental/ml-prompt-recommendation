@@ -11,12 +11,16 @@ corpus = data_recom['prompt'].tolist()
 tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)
 
+@app.route('/api/trigger', methods=['GET'])
+def trigger():
+    return jsonify({"message" : "trigger"})
+
 @app.route('/api/recommendation', methods=['POST'])
 def recommendation_route():
     if request.method == 'POST':
         try:
             data = request.json
-            input_prompt = data.get('prompt', '')  # Use get to handle missing key
+            input_prompt = data.get('prompt', '')
 
             input_tfidf = tfidf_vectorizer.transform([input_prompt])
 
